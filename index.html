@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Music Universe - Unlimited</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <div class="search-container">
+            <input type="text" id="query" placeholder="Tapez un titre (ex: Thriller)...">
+            <button id="btn-search">Explorer</button>
+        </div>
+
+        <div id="player-ui" class="hidden">
+            <img id="album-cover" src="" alt="Album Art">
+            <h1 id="track-title"></h1>
+            <h2 id="track-artist"></h2>
+            
+            <div id="karaoke-display">Recherche des paroles...</div>
+            
+            <audio id="audio-remote" controls autocomplete="off"></audio>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
