@@ -3,30 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bibliomusique Mobile</title>
+    <title>Bibliomusique | Urban Mobile</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div id="bg-overlay"></div>
-
-    <div class="container">
-        <div class="search-section">
-            <div class="glass-input">
-                <input type="text" id="query" placeholder="Ton mot Rap/Club...">
+    <div id="app">
+        <div class="search-box">
+            <input type="text" id="query" placeholder="UN MOT, UN SON...">
+            <div class="buttons">
                 <button id="btn-search">GO</button>
+                <button id="btn-voice">🎤</button>
             </div>
-            <button id="btn-voice" class="voice-btn">🎤 Maintenir pour parler</button>
         </div>
 
         <div id="player-ui" class="hidden">
-            <div class="album-art-container">
+            <div class="cover-wrapper">
                 <img src="" id="album-cover" alt="Cover">
             </div>
             
-            <div class="song-info glass">
-                <h1 id="track-title">TITRE</h1>
+            <div class="info-box">
+                <h1 id="track-title">CHARGEMENT...</h1>
                 <h2 id="track-artist">ARTISTE</h2>
                 <audio id="audio-remote" controls></audio>
             </div>

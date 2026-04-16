@@ -3,11 +3,8 @@ const btnVoice = document.getElementById('btn-voice');
 const queryInput = document.getElementById('query');
 const audio = document.getElementById('audio-remote');
 const playerUI = document.getElementById('player-ui');
-const bgOverlay = document.getElementById('bg-overlay');
 
-/**
- * RECHERCHE DEEZER
- */
+// Fonction Recherche
 const searchMusic = () => {
     const word = queryInput.value.trim();
     if (!word) return;
@@ -17,64 +14,56 @@ const searchMusic = () => {
 
     const script = document.createElement('script');
     script.id = 'deezer-script';
-    // On force Rap/Club et les sorties les plus récentes
+    // On force Rap/Club et Nouveautés
     script.src = `https://api.deezer.com/search?q=track:"${encodeURIComponent(word)}" rap hip-hop club&order=RELEASEDATE_DESC&output=jsonp&callback=handleResponse`;
     document.body.appendChild(script);
 };
 
-btnSearch.addEventListener('click', searchMusic);
-
 window.handleResponse = function(data) {
     if (data.data && data.data.length > 0) {
         const track = data.data[0];
-        // Affichage
         playerUI.classList.remove('hidden');
         document.getElementById('track-title').innerText = track.title;
-        document.getElementById('track-artist').innerText = track.artist.name;
+        document.getElementById('track-artist').innerText = `BY ${track.artist.name.toUpperCase()}`;
         document.getElementById('album-cover').src = track.album.cover_xl;
-        // Fond plein écran
-        bgOverlay.style.backgroundImage = `url(${track.album.cover_xl})`;
-        // Audio
+        document.body.style.backgroundImage = `url(${track.album.cover_xl})`;
         audio.src = track.preview;
         audio.play();
+    } else {
+        alert("Rien trouvé d'assez lourd !");
     }
 };
 
+btnSearch.addEventListener('click', searchMusic);
+
 /**
- * VOIX STYLE WHATSAPP (Maintenir pour parler)
+ * MICROPHONE (RECONNAISSANCE VOCALE)
  */
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
 if (SpeechRecognition) {
     const recognition = new SpeechRecognition();
     recognition.lang = 'fr-FR';
 
-    // Gestion de l'appui (Mobile & Desktop)
-    const startListening = (e) => {
-        e.preventDefault();
+    btnVoice.addEventListener('click', () => {
         recognition.start();
-        btnVoice.classList.add('active');
-        btnVoice.innerText = "Lâche pour chercher...";
-    };
-
-    const stopListening = () => {
-        recognition.stop();
-        btnVoice.classList.remove('active');
-        btnVoice.innerText = "Maintenir pour parler";
-    };
-
-    btnVoice.addEventListener('mousedown', startSearchVoice); // Desktop
-    btnVoice.addEventListener('touchstart', startSearchVoice); // Mobile
-    btnVoice.addEventListener('mouseup', stopListening);
-    btnVoice.addEventListener('touchend', stopListening);
-
-    function startSearchVoice(e) {
-        e.preventDefault();
-        recognition.start();
-        btnVoice.classList.add('active');
-    }
+        btnVoice.innerText = "Listening...";
+        btnVoice.style.background = "#00ff88";
+    });
 
     recognition.onresult = (event) => {
-        queryInput.value = event.results[0][0].transcript;
+        const result = event.results[0][0].transcript;
+        queryInput.value = result;
+        btnVoice.innerText = "🎤";
+        btnVoice.style.background = "#ff0055";
         searchMusic();
     };
+
+    recognition.onerror = () => {
+        btnVoice.innerText = "🎤";
+        btnVoice.style.background = "#ff0055";
+        alert("Active le micro dans tes réglages !");
+    };
+} else {
+    btnVoice.style.display = "none";
 }
