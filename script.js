@@ -1,11 +1,9 @@
 const btnSearch = document.getElementById('btn-search');
-const btnVoice = document.getElementById('btn-voice');
 const queryInput = document.getElementById('query');
 const audio = document.getElementById('audio-remote');
 const playerUI = document.getElementById('player-ui');
 
-// Fonction Recherche
-const searchMusic = () => {
+btnSearch.addEventListener('click', () => {
     const word = queryInput.value.trim();
     if (!word) return;
 
@@ -14,56 +12,45 @@ const searchMusic = () => {
 
     const script = document.createElement('script');
     script.id = 'deezer-script';
-    // On force Rap/Club et Nouveautés
-    script.src = `https://api.deezer.com/search?q=track:"${encodeURIComponent(word)}" rap hip-hop club&order=RELEASEDATE_DESC&output=jsonp&callback=handleResponse`;
+    
+    /**
+     * FILTRE RAP / CLUB :
+     * On cherche le mot dans le titre (track)
+     * On ajoute des mots clés comme "Rap" ou "Hip Hop" pour influencer l'algorithme
+     * On garde le tri par date de sortie décroissante (nouveautés)
+     */
+    const searchUrl = `https://api.deezer.com/search?q=track:"${encodeURIComponent(word)}" rap hip-hop club&order=RELEASEDATE_DESC&output=jsonp&callback=handleResponse`;
+    
+    script.src = searchUrl;
     document.body.appendChild(script);
-};
+});
 
 window.handleResponse = function(data) {
     if (data.data && data.data.length > 0) {
+        // On sélectionne le premier résultat (le plus récent et pertinent)
         const track = data.data[0];
-        playerUI.classList.remove('hidden');
-        document.getElementById('track-title').innerText = track.title;
-        document.getElementById('track-artist').innerText = `BY ${track.artist.name.toUpperCase()}`;
-        document.getElementById('album-cover').src = track.album.cover_xl;
-        document.body.style.backgroundImage = `url(${track.album.cover_xl})`;
-        audio.src = track.preview;
-        audio.play();
+        displayUrbanHit(track);
     } else {
-        alert("Rien trouvé d'assez lourd !");
+        alert("Pas de banger trouvé avec ce nom.");
     }
 };
 
-btnSearch.addEventListener('click', searchMusic);
+function displayUrbanHit(track) {
+    playerUI.classList.remove('hidden');
 
-/**
- * MICROPHONE (RECONNAISSANCE VOCALE)
- */
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    document.getElementById('track-title').innerText = track.title;
+    document.getElementById('track-artist').innerText = `BY ${track.artist.name}`;
+    document.getElementById('album-cover').src = track.album.cover_xl;
 
-if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'fr-FR';
+    // EFFET VISUEL : Fond d'écran avec l'image de l'album + filtre de couleur
+    const bgUrl = track.album.cover_xl;
+    document.body.style.backgroundImage = `linear-gradient(rgba(255,0,85,0.4), rgba(0,0,0,0.9)), url(${bgUrl})`;
 
-    btnVoice.addEventListener('click', () => {
-        recognition.start();
-        btnVoice.innerText = "Listening...";
-        btnVoice.style.background = "#00ff88";
-    });
-
-    recognition.onresult = (event) => {
-        const result = event.results[0][0].transcript;
-        queryInput.value = result;
-        btnVoice.innerText = "🎤";
-        btnVoice.style.background = "#ff0055";
-        searchMusic();
-    };
-
-    recognition.onerror = () => {
-        btnVoice.innerText = "🎤";
-        btnVoice.style.background = "#ff0055";
-        alert("Active le micro dans tes réglages !");
-    };
-} else {
-    btnVoice.style.display = "none";
+    audio.src = track.preview;
+    audio.play();
 }
+
+// Touche Entrée
+queryInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') btnSearch.click();
+});
