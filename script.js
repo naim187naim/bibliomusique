@@ -1,9 +1,14 @@
 const btnSearch = document.getElementById('btn-search');
+const btnVoice = document.getElementById('btn-voice');
 const queryInput = document.getElementById('query');
 const audio = document.getElementById('audio-remote');
 const playerUI = document.getElementById('player-ui');
+const bgOverlay = document.getElementById('bg-overlay');
 
-btnSearch.addEventListener('click', () => {
+/**
+ * RECHERCHE DEEZER
+ */
+const searchMusic = () => {
     const word = queryInput.value.trim();
     if (!word) return;
 
@@ -12,45 +17,64 @@ btnSearch.addEventListener('click', () => {
 
     const script = document.createElement('script');
     script.id = 'deezer-script';
-    
-    /**
-     * FILTRE RAP / CLUB :
-     * On cherche le mot dans le titre (track)
-     * On ajoute des mots clés comme "Rap" ou "Hip Hop" pour influencer l'algorithme
-     * On garde le tri par date de sortie décroissante (nouveautés)
-     */
-    const searchUrl = `https://api.deezer.com/search?q=track:"${encodeURIComponent(word)}" rap hip-hop club&order=RELEASEDATE_DESC&output=jsonp&callback=handleResponse`;
-    
-    script.src = searchUrl;
+    // On force Rap/Club et les sorties les plus récentes
+    script.src = `https://api.deezer.com/search?q=track:"${encodeURIComponent(word)}" rap hip-hop club&order=RELEASEDATE_DESC&output=jsonp&callback=handleResponse`;
     document.body.appendChild(script);
-});
+};
+
+btnSearch.addEventListener('click', searchMusic);
 
 window.handleResponse = function(data) {
     if (data.data && data.data.length > 0) {
-        // On sélectionne le premier résultat (le plus récent et pertinent)
         const track = data.data[0];
-        displayUrbanHit(track);
-    } else {
-        alert("Pas de banger trouvé avec ce nom.");
+        // Affichage
+        playerUI.classList.remove('hidden');
+        document.getElementById('track-title').innerText = track.title;
+        document.getElementById('track-artist').innerText = track.artist.name;
+        document.getElementById('album-cover').src = track.album.cover_xl;
+        // Fond plein écran
+        bgOverlay.style.backgroundImage = `url(${track.album.cover_xl})`;
+        // Audio
+        audio.src = track.preview;
+        audio.play();
     }
 };
 
-function displayUrbanHit(track) {
-    playerUI.classList.remove('hidden');
+/**
+ * VOIX STYLE WHATSAPP (Maintenir pour parler)
+ */
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'fr-FR';
 
-    document.getElementById('track-title').innerText = track.title;
-    document.getElementById('track-artist').innerText = `BY ${track.artist.name}`;
-    document.getElementById('album-cover').src = track.album.cover_xl;
+    // Gestion de l'appui (Mobile & Desktop)
+    const startListening = (e) => {
+        e.preventDefault();
+        recognition.start();
+        btnVoice.classList.add('active');
+        btnVoice.innerText = "Lâche pour chercher...";
+    };
 
-    // EFFET VISUEL : Fond d'écran avec l'image de l'album + filtre de couleur
-    const bgUrl = track.album.cover_xl;
-    document.body.style.backgroundImage = `linear-gradient(rgba(255,0,85,0.4), rgba(0,0,0,0.9)), url(${bgUrl})`;
+    const stopListening = () => {
+        recognition.stop();
+        btnVoice.classList.remove('active');
+        btnVoice.innerText = "Maintenir pour parler";
+    };
 
-    audio.src = track.preview;
-    audio.play();
+    btnVoice.addEventListener('mousedown', startSearchVoice); // Desktop
+    btnVoice.addEventListener('touchstart', startSearchVoice); // Mobile
+    btnVoice.addEventListener('mouseup', stopListening);
+    btnVoice.addEventListener('touchend', stopListening);
+
+    function startSearchVoice(e) {
+        e.preventDefault();
+        recognition.start();
+        btnVoice.classList.add('active');
+    }
+
+    recognition.onresult = (event) => {
+        queryInput.value = event.results[0][0].transcript;
+        searchMusic();
+    };
 }
-
-// Touche Entrée
-queryInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') btnSearch.click();
-});

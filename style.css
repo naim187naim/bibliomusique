@@ -1,75 +1,109 @@
-:root {
-    --accent-color: #00ff88; /* Un vert futuriste pour le côté récent */
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
     margin: 0;
+    padding: 0;
     height: 100vh;
     font-family: 'Inter', sans-serif;
-    background-color: #0a0a0a;
+    background-color: #000;
     color: white;
+    overflow: hidden;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-direction: column;
+}
+
+/* Fond plein écran */
+#bg-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
     background-size: cover;
     background-position: center;
-    overflow: hidden;
+    filter: blur(20px) brightness(0.5);
+    transition: background-image 1s ease;
+    z-index: -1;
 }
 
-#app {
-    text-align: center;
-    width: 100%;
-    z-index: 2;
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    justify-content: space-between;
 }
 
-.search-box {
-    position: absolute;
-    top: 40px;
-    width: 100%;
+/* Recherche Glassmorphism */
+.glass-input {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    display: flex;
+    padding: 5px;
+    margin-bottom: 10px;
 }
 
 input {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 12px 25px;
-    border-radius: 8px;
+    background: transparent;
+    border: none;
     color: white;
-    font-size: 1rem;
-    backdrop-filter: blur(10px);
-    width: 250px;
+    padding: 15px;
+    flex: 1;
+    font-size: 16px;
     outline: none;
 }
 
-#player-ui {
-    margin-top: 50px;
-    animation: scaleUp 0.8s ease-out;
+#btn-search {
+    background: #00ff88;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: bold;
 }
 
-#album-cover {
-    width: 350px;
-    height: 350px;
-    border-radius: 4px; /* Carré moderne */
-    box-shadow: 0 30px 100px rgba(0,0,0,0.9);
-}
-
-h1 {
-    font-size: 4rem;
-    margin: 20px 0 5px 0;
+.voice-btn {
+    width: 100%;
+    background: rgba(255, 0, 85, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 0, 85, 0.3);
+    color: white;
+    padding: 15px;
+    border-radius: 15px;
+    font-weight: bold;
     text-transform: uppercase;
-    font-weight: 900;
-    letter-spacing: -2px;
 }
 
-h2 {
-    font-size: 1.5rem;
-    opacity: 0.7;
-    font-weight: 300;
+.voice-btn.active { background: #00ff88; color: black; }
+
+/* Lecteur */
+#player-ui {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
 }
+
+.album-art-container img {
+    width: 80vw;
+    max-width: 300px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.song-info {
+    width: 100%;
+    padding: 20px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+h1 { font-size: 1.8rem; margin: 0; font-weight: 900; }
+h2 { font-size: 1.1rem; color: #00ff88; margin: 5px 0 15px 0; }
+
+audio { width: 100%; height: 40px; }
 
 .hidden { display: none; }
-
-@keyframes scaleUp {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-}

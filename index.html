@@ -2,26 +2,37 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Music Universe - Unlimited</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bibliomusique Mobile</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="app">
-        <div class="search-container">
-            <input type="text" id="query" placeholder="Tapez un titre (ex: Thriller)...">
-            <button id="btn-search">Explorer</button>
+
+    <div id="bg-overlay"></div>
+
+    <div class="container">
+        <div class="search-section">
+            <div class="glass-input">
+                <input type="text" id="query" placeholder="Ton mot Rap/Club...">
+                <button id="btn-search">GO</button>
+            </div>
+            <button id="btn-voice" class="voice-btn">🎤 Maintenir pour parler</button>
         </div>
 
         <div id="player-ui" class="hidden">
-            <img id="album-cover" src="" alt="Album Art">
-            <h1 id="track-title"></h1>
-            <h2 id="track-artist"></h2>
+            <div class="album-art-container">
+                <img src="" id="album-cover" alt="Cover">
+            </div>
             
-            <div id="karaoke-display">Recherche des paroles...</div>
-            
-            <audio id="audio-remote" controls autocomplete="off"></audio>
+            <div class="song-info glass">
+                <h1 id="track-title">TITRE</h1>
+                <h2 id="track-artist">ARTISTE</h2>
+                <audio id="audio-remote" controls></audio>
+            </div>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
